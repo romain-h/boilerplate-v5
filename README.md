@@ -3,3 +3,6 @@
 ## Install
 `npm install`
 
+## Tests
+To run tests:
+`npm test`
