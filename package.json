@@ -11,15 +11,26 @@
   "devDependencies": {
     "babelify": "^5.0.3",
     "browserify": "^9.0.3",
+    "browserify-shim": "^3.8.3",
     "gulp": "^3.8.11",
     "gulp-connect": "^2.2.0",
     "gulp-util": "^3.0.4",
+    "handsontable": "git://github.com/handsontable/handsontable.git",
     "jest-cli": "^0.4.0",
     "react": "^0.12.2",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.4.0"
   },
   "dependencies": {
-    "flux": "^2.0.1"
+    "flux": "^2.0.1",
+    "object-assign": "^2.0.0"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "handsontable": "global:Handsontable"
   }
 }
