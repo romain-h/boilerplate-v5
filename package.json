@@ -18,5 +18,8 @@
     "react": "^0.12.2",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.4.0"
+  },
+  "dependencies": {
+    "flux": "^2.0.1"
   }
 }
