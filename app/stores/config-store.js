@@ -2,17 +2,36 @@ var AppDispatcher = require('../dispatcher/AppDispatcher'),
     assign = require('object-assign'),
     EventEmitter = require('events').EventEmitter;
 
-var _config = {},
-  CHANGE_EVENT = 'change';
+var _config = {
+  _currentFieldset: 'xAxis',
+  title: 'This is a line chart',
+  xAxis: '',
+  yAxis: ''
+},
+CHANGE_EVENT = 'change';
 
-function setX(val) {
-  _config.x = val;
+function set(key, val) {
+  _config[key] = val;
+}
+
+function setCurrentField(key) {
+  _config._currentFieldset = key;
+}
+
+
+function setEditingInput(val) {
+  _config[_config._currentFieldset] = val;
 }
 
 var ConfigStore = assign({}, EventEmitter.prototype, {
-  getXVal: function () {
-    return _config.x;
+  getConfig: function () {
+    return _config;
   },
+
+  get: function (key) {
+    return _config[key];
+  },
+
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -27,13 +46,20 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
 });
 
 AppDispatcher.register(function(action) {
-
   switch(action.actionType) {
     case 'grid_select_value':
       var val = action.config.toString();
       console.log(action.config);
       // Get current selected fieldset??
-      setX(val);
+      setEditingInput(val);
+      ConfigStore.emitChange();
+      break;
+    case 'form_input_modif':
+      set(action.field.key, action.field.val);
+      ConfigStore.emitChange();
+      break;
+    case 'form_set_current_edit_field':
+      setCurrentField(action.key);
       ConfigStore.emitChange();
       break;
   }

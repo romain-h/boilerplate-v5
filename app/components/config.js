@@ -1,10 +1,16 @@
 var React = require('react'),
-    ConfigStore = require('../stores/config-store');
+    ConfigStore = require('../stores/config-store'),
+    FormActions = require('../actions/form-actions');
 
 var Input = React.createClass({
-  getInitialState: function() {
-    return { value: '' };
+  getInitialState: function () {
+    return { val: this.props.val };
   },
+
+  _onChange: function () {
+    this.setState({ val: ConfigStore.get(this.props.id) });
+  },
+
   componentDidMount: function() {
     ConfigStore.addChangeListener(this._onChange);
   },
@@ -14,58 +20,51 @@ var Input = React.createClass({
   },
 
   handleChange: function(event) {
-    this.setState({ value: event.target.value });
-    // New action? Store the new value inside config store?
+    var newVal = event.target.value;
+    this.setState({ val: newVal });
+    FormActions.input(this.props.id, newVal);
   },
-
-  _onChange: function () {
-    this.setState({ value: ConfigStore.getXVal() });
-  },
-
   render: function() {
     return (
-      <input id={this.props.id} type='text' value={this.state.value} onChange={this.handleChange} />
+      <input id={this.props.id} type='text' value={this.state.val} onChange={this.handleChange} />
     );
   }
 });
 
 var FormGroup = React.createClass({
-  handleClick: function (event) {
-    console.log('event inside');
-    console.log(event);
+  handleClick: function () {
+    // TODO if editable by select....
+    FormActions.setCurrentEditionField(this.props.id);
   },
-
-  hand: function () {
-    console.log('er');
-  },
-
   render: function () {
     return (
-      <div className='form-group'>
-        <label htmlFor={this.props.id} onClick={this.hand}>{this.props.label}</label>
-        <Input id={this.props.id} />
+      <div className='form-group' onClick={this.handleClick} >
+        <label htmlFor={this.props.id}>{this.props.label}</label>
+        <Input id={this.props.id} val={this.props.val} />
       </div>
     )
   }
 });
 
 var Config = React.createClass({
-  // Use store to get all the config here
-  // Then inside the config set a private _isSelected: 'key'
-  // that will be used to set the correct value from the grid
   getInitialState: function () {
-    return {
-      currentFieldset: '',
-      title: 'This is a line chart'
-    };
+    return ConfigStore.getConfig();
   },
-  handleClick: function (event) {
-    console.log('event config form');
-    console.log(event);
+
+  _onChange: function () {
+    this.setState(ConfigStore.getConfig());
   },
+
+  componentDidMount: function() {
+    ConfigStore.addChangeListener(this._onChange);
+  },
+
+  componentWillUnmount: function() {
+    ConfigStore.removeChangeListener(this._onChange);
+  },
+
   render: function() {
-    var boundClick = this.handleClick,
-    style = {
+    var style = {
       float: 'left',
       width: '350px',
       marginRight: '40px'
@@ -73,9 +72,9 @@ var Config = React.createClass({
     return (
       <div>
         <form className='config-form'>
-          <FormGroup id='title' label='Title' initVal={this.state.title} />
-          <FormGroup id='inputx' label='x-axis' onClick={boundClick} />
-          <FormGroup id='inputy' label='y-axis' onClick={boundClick} />
+          <FormGroup id='title' label='Title' val={this.state.title} />
+          <FormGroup id='xAxis' label='x-axis' val={this.state.xAxis} />
+          <FormGroup id='yAxis' label='y-axis' val={this.state.yAxis} />
         </form>
         <div style={style}>
           <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
