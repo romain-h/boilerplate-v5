@@ -1,5 +1,3 @@
-'use strict';
-
 var React = require('react'),
     GridActions = require('../actions/grid-actions'),
     Handsontable = require('handsontable');
@@ -36,12 +34,6 @@ var customBorders = [
     }];
 
 var Grid = React.createClass({
-  getInitialState: function () {
-    return {
-      spreadsheetData: this.props.spreadsheetData
-    };
-  },
-
   afterSelection: function (r, c, r2, c2) {
     console.log(arguments);
     var val;
@@ -64,10 +56,12 @@ var Grid = React.createClass({
     var el = this.getDOMNode();
 
     this.gridEditor = new Handsontable(el, {
-      data: this.state.spreadsheetData,
+      data: this.props.spreadsheetData,
       colHeaders: true,
       rowHeaders: true,
       minSpareRows: 1,
+      minCols: 8,
+      minRows: 30,
       contextMenu: true,
       afterSelection: this.afterSelection
     });
@@ -81,6 +75,9 @@ var Grid = React.createClass({
 
   render: function () {
     console.log(this.props);
+    if (this.gridEditor) {
+      this.gridEditor.loadData(this.props.spreadsheetData);
+    }
     return <div className='grid-edition'></div>;
   }
 });

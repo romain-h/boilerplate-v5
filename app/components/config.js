@@ -23,14 +23,13 @@ var Input = React.createClass({
   },
 
   render: function() {
-    var value = this.state.value;
     return (
-      <input id={this.props.id} type='text' value={value} onChange={this.handleChange} />
+      <input id={this.props.id} type='text' value={this.state.value} onChange={this.handleChange} />
     );
   }
 });
 
-var Fieldset = React.createClass({
+var FormGroup = React.createClass({
   handleClick: function (event) {
     console.log('event inside');
     console.log(event);
@@ -42,11 +41,9 @@ var Fieldset = React.createClass({
 
   render: function () {
     return (
-      <div>
-      <fieldset>
+      <div className='form-group'>
         <label htmlFor={this.props.id} onClick={this.hand}>{this.props.label}</label>
         <Input id={this.props.id} />
-      </fieldset>
       </div>
     )
   }
@@ -57,19 +54,33 @@ var Config = React.createClass({
   // Then inside the config set a private _isSelected: 'key'
   // that will be used to set the correct value from the grid
   getInitialState: function () {
-    return { currentFieldset: '' };
+    return {
+      currentFieldset: '',
+      title: 'This is a line chart'
+    };
   },
   handleClick: function (event) {
     console.log('event config form');
     console.log(event);
   },
   render: function() {
-    var boundClick = this.handleClick;
+    var boundClick = this.handleClick,
+    style = {
+      float: 'left',
+      width: '350px',
+      marginRight: '40px'
+    };
     return (
-      <form className='config-form'>
-        <Fieldset id='inputx' label='X' onClick={boundClick} />
-        <Fieldset id='inputy' label='Y' onClick={boundClick} />
-      </form>
+      <div>
+        <form className='config-form'>
+          <FormGroup id='title' label='Title' initVal={this.state.title} />
+          <FormGroup id='inputx' label='x-axis' onClick={boundClick} />
+          <FormGroup id='inputy' label='y-axis' onClick={boundClick} />
+        </form>
+        <div style={style}>
+          <pre>{JSON.stringify(this.state, undefined, 2)}</pre>
+        </div>
+      </div>
     );
   }
 });
