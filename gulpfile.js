@@ -32,8 +32,11 @@ bundler.transform(babelify);
 var bundle = function () {
   return bundler.bundle()
     // log errors if they happen
-    .on('error', util.log.bind(util, 'Browserify Error'))
-    .on('log', util.log)
+    .on('error', function(err) {
+      util.log(util.colors.red('Browserify error:'), err.message);
+      this.emit('end');
+    })
+    .on('log', function () { util.log('test'); })
     .pipe(source('bundle.js'))
     .pipe(gulp.dest('./build'))
     .pipe(connect.reload());
@@ -41,7 +44,9 @@ var bundle = function () {
 
 gulp.task('js', bundle);
 bundler.on('update', bundle); // on any dep update, runs the bundler
-
+bundler.on('log', function (msg) {
+  util.log('Watchify', msg);
+});
 // Default task to run without params
 gulp.task('default', ['connect', 'js'], function() {
   // Watch less files and compile
